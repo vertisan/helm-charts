@@ -56,23 +56,24 @@ spec:
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:
-            - name: router-config
-              mountPath: /mktxp_config
-            - name: scrapper-config
-              mountPath: /mktxp_config
+            - name: config
+              mountPath: /mktxp_config/
+              readOnly: true
       volumes:
-        - name: router-config
-          secret:
-            secretName: {{ include "prometheus-mktxp.config.router.secretName" . }}
-            items:
-              - key: {{ .Values.config.router.existingSecretKey | default "config" }}
-                path: mktxp.config
-        - name: scrapper-config
-          secret:
-            secretName: {{ include "prometheus-mktxp.config.scrapper.secretName" . }}
-            items:
-              - key: {{ .Values.config.scrapper.existingSecretKey | default "config" }}
-                path: _mktxp.config
+        - name: config
+          projected:
+            sources:
+            - secret:
+                name: {{ include "prometheus-mktxp.config.router.secretName" . }}
+                items:
+                  - key: {{ .Values.config.router.existingSecretKey | default "config" }}
+                    path: mktxp.config
+            - secret:
+                name: {{ include "prometheus-mktxp.config.scrapper.secretName" . }}
+                items:
+                  - key: {{ .Values.config.scrapper.existingSecretKey | default "config" }}
+                    path: _mktxp.config
+
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

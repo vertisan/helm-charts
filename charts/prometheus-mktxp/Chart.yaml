@@ -5,6 +5,8 @@ type: application
 version: 0.0.1
 appVersion: "v1.2.5"
 home: https://github.com/akpw/mktxp
+maintainers:
+  - name: VRS-Factory
 keywords:
   - monitoring
   - metric
