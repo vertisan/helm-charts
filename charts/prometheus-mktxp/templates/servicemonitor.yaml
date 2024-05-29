@@ -1,0 +1,32 @@
+{{- if .Values.serviceMonitor.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ include "prometheus-mktxp.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{ include "prometheus-mktxp.labels" . | nindent 4 }}
+    {{- with .Values.serviceMonitor.additionalLabels }}
+      {{- toYaml . | nindent 4 }}
+    {{- end }}
+  {{- with .Values.serviceMonitor.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  namespaceSelector:
+    matchNames:
+      - {{ .Release.Namespace }}
+  selector:
+    matchLabels:
+      {{- include "prometheus-mktxp.selectorLabels" . | nindent 6 }}
+  endpoints:
+    - port: http-metrics
+      path: /
+      {{- with .Values.serviceMonitor.interval }}
+      interval: {{ . }}
+      {{- end }}
+      {{- with .Values.serviceMonitor.scrapeTimeout }}
+      scrapeTimeout: {{ . }}
+      {{- end }}
+{{- end -}}
