@@ -6,9 +6,17 @@ metadata:
   labels:
     {{- include "prometheus-mktxp.labels" . | nindent 4 }}
   annotations:
-    checksum/secret-config-router: {{ include (print $.Template.BasePath "/secret-config-router.yaml") . | sha256sum }}
-    checksum/secret-config-scrapper: {{ include (print $.Template.BasePath "/secret-config-scrapper.yaml") . | sha256sum }}
+    {{- with .Values.podAnnotations }}
+    {{- toYaml . | nindent 8 }}
+    {{- end }}
+    {{- if not .Values.config.router.existingSecret }}
+    checksum/secret-config-router: {{ include (print $.Template.BasePath "/secret-router-config.yaml") . | sha256sum }}
+    {{- end }}
+    {{- if not .Values.config.scrapper.existingSecret }}
+    checksum/secret-config-scrapper: {{ include (print $.Template.BasePath "/secret-scrapper-config.yaml") . | sha256sum }}
+    {{- end }}
 spec:
+  replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
       {{- include "prometheus-mktxp.selectorLabels" . | nindent 6 }}
@@ -32,7 +40,7 @@ spec:
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
-        - name: {{ .Chart.Name }}
+        - name: mktxp
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
@@ -48,23 +56,23 @@ spec:
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:
-            - name: config-router
+            - name: router-config
               mountPath: /mktxp_config
-            - name: config-scrapper
+            - name: scrapper-config
               mountPath: /mktxp_config
       volumes:
-        - name: config-router
+        - name: router-config
           secret:
             secretName: {{ include "prometheus-mktxp.config.router.secretName" . }}
             items:
-              - key: config
+              - key: {{ .Values.config.router.existingSecretKey | default "config" }}
                 path: mktxp.config
-        # - name: config-scrapper
-        #   secret:
-        #     secretName: {{ include "prometheus-mktxp.fullname" . }}-scrapper-config
-        #     items:
-        #       - key: config
-        #         path: _mktxp.config
+        - name: scrapper-config
+          secret:
+            secretName: {{ include "prometheus-mktxp.config.scrapper.secretName" . }}
+            items:
+              - key: {{ .Values.config.scrapper.existingSecretKey | default "config" }}
+                path: _mktxp.config
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

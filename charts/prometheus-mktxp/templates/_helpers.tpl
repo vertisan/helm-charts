@@ -65,20 +65,12 @@ Create the name of the service account to use
 Create Secret name for Router Config
 */}}
 {{- define "prometheus-mktxp.config.router.secretName" -}}
-{{- if .Values.config.router.existingSecret }}
-{{- .Values.config.router.existingSecret }}
-{{- else }}
-{{- include "prometheus-mktxp.fullname" . }}-router-config
-{{- end }}
+{{- default (printf "%s-router-config" (include "prometheus-mktxp.fullname" .)) .Values.config.router.existingSecret }}
 {{- end }}
 
 {{/*
 Create Secret name for Scrapper Config
 */}}
 {{- define "prometheus-mktxp.config.scrapper.secretName" -}}
-{{- if .Values.config.scrapper.existingSecret }}
-{{- .Values.config.scrapper.existingSecret }}
-{{- else }}
-{{- include "prometheus-mktxp.fullname" . }}-scrapper-config
-{{- end }}
+{{- default (printf "%s-scrapper-config" (include "prometheus-mktxp.fullname" .)) .Values.config.scrapper.existingSecret }}
 {{- end }}

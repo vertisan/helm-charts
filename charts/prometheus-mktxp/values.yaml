@@ -1,3 +1,5 @@
+replicaCount: 1
+
 image:
   repository: ghcr.io/akpw/mktxp
   pullPolicy: IfNotPresent
@@ -24,33 +26,31 @@ podAnnotations: {}
 podLabels: {}
 
 podSecurityContext:
-  {}
-  # fsGroup: 2000
+  runAsUser: 1000
 
 securityContext:
-  {}
-  # capabilities:
-  #   drop:
-  #   - ALL
-  # readOnlyRootFilesystem: true
-  # runAsNonRoot: true
-  # runAsUser: 1000
+  runAsUser: 2000
+  allowPrivilegeEscalation: false
 
 service:
   type: ClusterIP
   port: 49090
 
 resources:
+  requests:
+    cpu: 10m
+    memory: 64Mi
   limits:
     cpu: 500m
     memory: 512Mi
-  requests: {}
 
 nodeSelector: {}
 
 tolerations: []
 
 affinity: {}
+
+annotations: {}
 
 config:
   # mktxp

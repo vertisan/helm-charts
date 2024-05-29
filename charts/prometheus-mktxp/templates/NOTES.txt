@@ -1,0 +1,12 @@
+Prometheus Exporter for Mikrotik {{ .Chart.AppVersion }} has been installed.
+Check a dedicated dashboard for Grafana: https://grafana.com/grafana/dashboards/13679
+
+For release notes for this version please see: https://github.com/akpw/mktxp/releases
+
+{{ if .Values.serviceMonitor.enabled -}}
+Service Monitor is enabled.
+{{- end -}}
+
+Sample configurations:
+- Router (mktxp.conf) - https://github.com/akpw/mktxp/blob/main/mktxp/cli/config/mktxp.conf
+- Scrapper (_mktxp.conf) - https://github.com/akpw/mktxp/blob/main/mktxp/cli/config/_mktxp.conf
