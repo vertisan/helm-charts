@@ -42,7 +42,11 @@ spec:
       initContainers:
         - name: prepare-config
           image: busybox
-          command: ['sh', '-c', 'cp /tmp/mktxp_config/* /mktxp_config/']
+          command: [
+            'sh',
+            '-c',
+            'cp -pv /tmp/mktxp_config/* /mktxp_config/ && chown 100:101 /mktxp_config/*.conf'
+          ]
           volumeMounts:
             - name: config
               mountPath: /mktxp_config/
@@ -79,14 +83,14 @@ spec:
                 name: {{ include "prometheus-mktxp.config.router.secretName" . }}
                 items:
                   - key: {{ .Values.config.router.existingSecretKey | default "config" }}
-                    path: mktxp.config
-                    mode: 0644
+                    path: mktxp.conf
+                    mode: 0664
             - secret:
                 name: {{ include "prometheus-mktxp.config.scrapper.secretName" . }}
                 items:
                   - key: {{ .Values.config.scrapper.existingSecretKey | default "config" }}
-                    path: _mktxp.config
-                    mode: 0644
+                    path: _mktxp.conf
+                    mode: 0664
 
       {{- with .Values.nodeSelector }}
       nodeSelector:
