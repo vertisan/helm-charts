@@ -26,10 +26,11 @@ podAnnotations: {}
 podLabels: {}
 
 podSecurityContext:
-  runAsUser: 100
+  {}
+  # runAsUser: 100
 
 securityContext:
-  runAsUser: 100
+  # runAsUser: 100
   allowPrivilegeEscalation: false
 
 service:
