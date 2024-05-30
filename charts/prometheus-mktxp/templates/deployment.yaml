@@ -46,8 +46,6 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           args:
-            - --cfg-dir
-            - /mktxp_config
             - export
           ports:
             - name: http-metrics
@@ -57,8 +55,7 @@ spec:
             {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:
             - name: config
-              mountPath: /mktxp_config/
-              readOnly: true
+              mountPath: /home/mktxp/mktxp/
       volumes:
         - name: config
           projected:
