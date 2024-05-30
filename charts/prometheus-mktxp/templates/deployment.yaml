@@ -1,0 +1,102 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "prometheus-mktxp.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "prometheus-mktxp.labels" . | nindent 4 }}
+  annotations:
+    {{- with .Values.podAnnotations }}
+    {{- toYaml . | nindent 8 }}
+    {{- end }}
+    {{- if not .Values.config.router.existingSecret }}
+    checksum/secret-config-router: {{ include (print $.Template.BasePath "/secret-router-config.yaml") . | sha256sum }}
+    {{- end }}
+    {{- if not .Values.config.scrapper.existingSecret }}
+    checksum/secret-config-scrapper: {{ include (print $.Template.BasePath "/secret-scrapper-config.yaml") . | sha256sum }}
+    {{- end }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "prometheus-mktxp.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "prometheus-mktxp.labels" . | nindent 8 }}
+        {{- with .Values.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "prometheus-mktxp.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      initContainers:
+        - name: prepare-config
+          image: busybox
+          command: ['sh', '-c', 'cp /tmp/mktxp_config/* /mktxp_config/']
+          volumeMounts:
+            - name: config
+              mountPath: /mktxp_config/
+            - name: tmp-config
+              mountPath: /tmp/mktxp_config/
+      containers:
+        - name: mktxp
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          args:
+            - --cfg-dir
+            - /mktxp_config
+            - export
+          ports:
+            - name: http-metrics
+              containerPort: 49090
+              protocol: TCP
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            - name: config
+              mountPath: /mktxp_config
+            - name: tmp-config
+              mountPath: /tmp/mktxp_config/
+      volumes:
+        - name: config
+          emptyDir: {}
+        - name: tmp-config
+          projected:
+            sources:
+            - secret:
+                name: {{ include "prometheus-mktxp.config.router.secretName" . }}
+                items:
+                  - key: {{ .Values.config.router.existingSecretKey | default "config" }}
+                    path: mktxp.config
+                    mode: 0644
+            - secret:
+                name: {{ include "prometheus-mktxp.config.scrapper.secretName" . }}
+                items:
+                  - key: {{ .Values.config.scrapper.existingSecretKey | default "config" }}
+                    path: _mktxp.config
+                    mode: 0644
+
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
