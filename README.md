@@ -4,13 +4,6 @@
 
 ```shell
 $ helm repo add vrs-factory https://helm.vrs-factory.dev
-$ helm install <release-name> vrs-factory/<chart-name>
+$ helm repo update
+$ helm search repo -r "vrs-factory/*"
 ```
-
-## Charts
-
-### Prometheus Exporter for Mikrotik
-
-- Name: `prometheus-mikrotik-exporter`
-- Source: https://github.com/akpw/mktxp
-- Credits: https://github.com/akpw
