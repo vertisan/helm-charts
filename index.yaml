@@ -1,0 +1,36 @@
+apiVersion: v1
+entries:
+  prometheus-mikrotik-exporter:
+  - annotations:
+      artifacthub.io/category: monitoring-logging
+      artifacthub.io/links: |
+        - name: Chart Source
+          url: https://github.com/vertisan/helm-charts
+        - name: Upstream Project
+          url: https://github.com/akpw/mktxp
+        - name: Dedicated Grafana dashboard
+          url: https://grafana.com/grafana/dashboards/13679
+    apiVersion: v2
+    appVersion: v1.2.5
+    created: "2024-05-31T09:57:17.85069389Z"
+    description: Prometheus Exporter for Mikrotik RouterOS devices.
+    digest: 49c69e66af0c70bc20ee4d20143607020f008e11d7dc501b7cf5af71a55e480f
+    home: https://github.com/akpw/mktxp
+    keywords:
+    - monitoring
+    - metric
+    - mikrotik
+    - prometheus
+    - exporter
+    maintainers:
+    - name: VRS-Factory
+      url: https://vrs-factory.dev
+    name: prometheus-mikrotik-exporter
+    sources:
+    - https://github.com/vertisan/helm-charts
+    - https://github.com/akpw/mktxp
+    type: application
+    urls:
+    - https://github.com/vertisan/helm-charts/releases/download/prometheus-mikrotik-exporter-0.1.1/prometheus-mikrotik-exporter-0.1.1.tgz
+    version: 0.1.1
+generated: "2024-05-31T09:57:17.8507047Z"
