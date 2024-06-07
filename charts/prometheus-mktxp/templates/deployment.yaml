@@ -47,6 +47,10 @@ spec:
             '-c',
             'cp -pv /tmp/mktxp_config/* /mktxp_config/ && chown 100:101 /mktxp_config/*.conf'
           ]
+          resources:
+            limits:
+              cpu: 25m
+              memory: 64Mi
           volumeMounts:
             - name: config
               mountPath: /mktxp_config/
