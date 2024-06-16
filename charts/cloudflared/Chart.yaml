@@ -1,0 +1,26 @@
+apiVersion: v2
+name: cloudflared
+description: Cloudflare Tunnel client (formerly Argo Tunnel).
+type: application
+version: 0.1.0
+appVersion: "2024.6.0"
+home: https://github.com/cloudflare/cloudflared
+maintainers:
+  - name: VRS-Factory
+    url: https://vrs-factory.dev
+keywords:
+  - networking
+  - cloudflare
+  - cloudflared
+  - argo
+  - tunnel
+sources:
+  - https://github.com/vertisan/helm-charts
+  - https://github.com/cloudflare/cloudflared
+annotations:
+  artifacthub.io/category: networking
+  artifacthub.io/links: |
+    - name: Chart Source
+      url: https://github.com/vertisan/helm-charts
+    - name: Upstream Project
+      url: https://github.com/cloudflare/cloudflared
