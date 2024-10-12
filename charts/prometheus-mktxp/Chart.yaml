@@ -26,3 +26,6 @@ annotations:
       url: https://github.com/akpw/mktxp
     - name: Dedicated Grafana dashboard
       url: https://grafana.com/grafana/dashboards/13679
+  artifacthub.io/signKey: |
+    fingerprint: BF013739E0FE6C13C90077C780A79E38DF9F4B33
+    url: https://keybase.io/vrsfactory/pgp_keys.asc
