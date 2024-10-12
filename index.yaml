@@ -10,6 +10,41 @@ entries:
           url: https://github.com/akpw/mktxp
         - name: Dedicated Grafana dashboard
           url: https://grafana.com/grafana/dashboards/13679
+      artifacthub.io/signKey: |
+        fingerprint: BF013739E0FE6C13C90077C780A79E38DF9F4B33
+        url: https://keybase.io/vrsfactory/pgp_keys.asc
+    apiVersion: v2
+    appVersion: v1.2.7
+    created: "2024-10-12T19:36:17.599352898Z"
+    description: Prometheus Exporter for Mikrotik RouterOS devices.
+    digest: b3c3a4bfb1addbb46b448e74297d35d08046a39331598c6a2e629ef08b5ff3c3
+    home: https://github.com/akpw/mktxp
+    keywords:
+    - monitoring
+    - metric
+    - mikrotik
+    - prometheus
+    - exporter
+    maintainers:
+    - name: VRS-Factory
+      url: https://vrs-factory.dev
+    name: prometheus-mikrotik-exporter
+    sources:
+    - https://github.com/vertisan/helm-charts
+    - https://github.com/akpw/mktxp
+    type: application
+    urls:
+    - https://github.com/vertisan/helm-charts/releases/download/prometheus-mikrotik-exporter-0.5.1/prometheus-mikrotik-exporter-0.5.1.tgz
+    version: 0.5.1
+  - annotations:
+      artifacthub.io/category: monitoring-logging
+      artifacthub.io/links: |
+        - name: Chart Source
+          url: https://github.com/vertisan/helm-charts
+        - name: Upstream Project
+          url: https://github.com/akpw/mktxp
+        - name: Dedicated Grafana dashboard
+          url: https://grafana.com/grafana/dashboards/13679
     apiVersion: v2
     appVersion: v1.2.6
     created: "2024-06-14T19:38:51.501945565Z"
@@ -129,4 +164,4 @@ entries:
     urls:
     - https://github.com/vertisan/helm-charts/releases/download/prometheus-mikrotik-exporter-0.1.1/prometheus-mikrotik-exporter-0.1.1.tgz
     version: 0.1.1
-generated: "2024-06-14T19:38:51.501989097Z"
+generated: "2024-10-12T19:36:17.599378276Z"
