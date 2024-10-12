@@ -10,10 +10,10 @@ metadata:
     {{- toYaml . | nindent 8 }}
     {{- end }}
     {{- if not .Values.config.router.existingSecret }}
-    checksum/secret-config-router: {{ include (print $.Template.BasePath "/secrets.yaml") . | sha256sum }}
+    checksum/secret-config-router: {{ include (print $.Template.BasePath "/secret-router-config.yaml") . | sha256sum }}
     {{- end }}
     {{- if not .Values.config.scrapper.existingSecret }}
-    checksum/secret-config-scrapper: {{ include (print $.Template.BasePath "/secrets.yaml") . | sha256sum }}
+    checksum/secret-config-scrapper: {{ include (print $.Template.BasePath "/secret-scrapper-config.yaml") . | sha256sum }}
     {{- end }}
 spec:
   replicas: {{ .Values.replicaCount }}
