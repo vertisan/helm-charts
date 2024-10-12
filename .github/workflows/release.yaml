@@ -10,6 +10,8 @@ jobs:
     uses: vertisan/helm-charts/.github/workflows/lint-test.yaml@master
 
   release:
+    needs: lint-test
+    if: needs.lint-test.result == 'success'
     permissions:
       contents: write
     runs-on: ubuntu-latest
