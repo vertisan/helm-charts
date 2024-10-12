@@ -1,12 +1,14 @@
 name: Release Charts
 
 on:
-  workflow_run:
-    workflows: [Lint and Test Charts]
-    types:
-      - completed
+  push:
+    tags:
+    - '*'
 
 jobs:
+  lint-test:
+    uses: vertisan/helm-charts/.github/workflows/lint-test.yaml@master
+
   release:
     permissions:
       contents: write
