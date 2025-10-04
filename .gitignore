@@ -1,0 +1,11 @@
+# Node modules
+node_modules/
+package-lock.json
+
+# Helm
+.cr-gpg/
+
+# Temporary files
+*.tmp
+tmp/
+.DS_Store

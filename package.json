@@ -1,0 +1,17 @@
+{
+  "name": "helm-charts",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Helm Charts repository",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/vertisan/helm-charts.git"
+  },
+  "devDependencies": {
+    "@semantic-release/changelog": "^6.0.3",
+    "@semantic-release/exec": "^6.0.3",
+    "@semantic-release/git": "^10.0.1",
+    "@semantic-release/github": "^9.0.0",
+    "semantic-release": "^22.0.0"
+  }
+}
