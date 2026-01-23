@@ -2,18 +2,22 @@ name: Release Charts
 
 on:
   push:
-    tags:
-    - '*'
+    branches:
+      - master
+    paths:
+      - 'charts/**'
 
 jobs:
   lint-test:
-    uses: vertisan/helm-charts/.github/workflows/lint-test.yaml@master
+    uses: ./.github/workflows/lint-test.yaml
 
   release:
     needs: lint-test
     if: needs.lint-test.result == 'success'
     permissions:
       contents: write
+      packages: write
+      id-token: write
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -31,6 +35,10 @@ jobs:
         with:
           version: v3.14.4
 
+      - name: Add Helm repositories
+        run: |
+          helm repo add bitnami https://charts.bitnami.com/bitnami
+
       - name: Prepare GPG
         run: |
           gpg_dir=.cr-gpg
@@ -47,7 +55,9 @@ jobs:
 
       - name: Run chart-releaser
         uses: helm/chart-releaser-action@v1.6.0
-        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          charts_dir: charts
+          skip_existing: true
         env:
           CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
           CR_KEY: "${{ secrets.CR_KEY }}"

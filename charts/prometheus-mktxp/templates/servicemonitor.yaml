@@ -5,7 +5,7 @@ metadata:
   name: {{ include "prometheus-mktxp.fullname" . }}
   namespace: {{ .Release.Namespace }}
   labels:
-    {{ include "prometheus-mktxp.labels" . | nindent 4 }}
+    {{- include "prometheus-mktxp.labels" . | nindent 4 }}
     {{- with .Values.serviceMonitor.additionalLabels }}
       {{- toYaml . | nindent 4 }}
     {{- end }}

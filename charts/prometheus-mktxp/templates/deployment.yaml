@@ -5,16 +5,10 @@ metadata:
   namespace: {{ .Release.Namespace }}
   labels:
     {{- include "prometheus-mktxp.labels" . | nindent 4 }}
+  {{- with .Values.annotations }}
   annotations:
-    {{- with .Values.podAnnotations }}
-    {{- toYaml . | nindent 8 }}
-    {{- end }}
-    {{- if not .Values.config.router.existingSecret }}
-    checksum/secret-config-router: {{ include (print $.Template.BasePath "/secret-router-config.yaml") . | sha256sum }}
-    {{- end }}
-    {{- if not .Values.config.scrapper.existingSecret }}
-    checksum/secret-config-scrapper: {{ include (print $.Template.BasePath "/secret-scrapper-config.yaml") . | sha256sum }}
-    {{- end }}
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
@@ -22,10 +16,16 @@ spec:
       {{- include "prometheus-mktxp.selectorLabels" . | nindent 6 }}
   template:
     metadata:
-      {{- with .Values.podAnnotations }}
       annotations:
+        {{- if not .Values.config.router.existingSecret }}
+        checksum/secret-config-router: {{ include (print $.Template.BasePath "/secret-router-config.yaml") . | sha256sum }}
+        {{- end }}
+        {{- if not .Values.config.scrapper.existingSecret }}
+        checksum/secret-config-scrapper: {{ include (print $.Template.BasePath "/secret-scrapper-config.yaml") . | sha256sum }}
+        {{- end }}
+        {{- with .Values.podAnnotations }}
         {{- toYaml . | nindent 8 }}
-      {{- end }}
+        {{- end }}
       labels:
         {{- include "prometheus-mktxp.labels" . | nindent 8 }}
         {{- with .Values.podLabels }}
@@ -41,12 +41,21 @@ spec:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       initContainers:
         - name: prepare-config
-          image: busybox
+          image: busybox:1.37
+          imagePullPolicy: IfNotPresent
           command: [
             'sh',
             '-c',
             'cp -pv /tmp/mktxp_config/* /mktxp_config/ && chown 100:101 /mktxp_config/*.conf'
           ]
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+              add:
+                - CHOWN
           resources:
             limits:
               cpu: 25m
@@ -70,6 +79,22 @@ spec:
             - name: http-metrics
               containerPort: 49090
               protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http-metrics
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http-metrics
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:
