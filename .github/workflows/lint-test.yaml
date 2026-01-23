@@ -37,6 +37,9 @@ jobs:
           changed=$(ct list-changed --target-branch ${{ github.event.repository.default_branch }})
           if [[ -n "$changed" ]]; then
             echo "changed=true" >> "$GITHUB_OUTPUT"
+            echo "charts<<EOF" >> "$GITHUB_OUTPUT"
+            echo "$changed" >> "$GITHUB_OUTPUT"
+            echo "EOF" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Run chart-testing (lint)
@@ -53,13 +56,22 @@ jobs:
 
   lint-artifacthub:
     runs-on: ubuntu-latest
-    container:
-      image: artifacthub/ah
-      options: --user 1001
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Run ah lint
-        working-directory: ./charts/prometheus-mktxp
-        run: ah lint
+      - name: Get changed charts
+        id: changed-charts
+        run: |
+          # Get all chart directories
+          charts=$(find charts -mindepth 1 -maxdepth 1 -type d -printf '%f\n' | tr '\n' ' ')
+          echo "charts=$charts" >> "$GITHUB_OUTPUT"
+
+      - name: Run ah lint on all charts
+        run: |
+          for chart_dir in charts/*/; do
+            if [ -f "$chart_dir/Chart.yaml" ]; then
+              echo "Linting chart: $chart_dir"
+              docker run --rm -v "$(pwd)/$chart_dir:/chart" artifacthub/ah ah lint /chart
+            fi
+          done

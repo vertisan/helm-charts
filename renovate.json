@@ -1,0 +1,65 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended",
+    ":semanticCommits",
+    "helpers:pinGitHubActionDigests"
+  ],
+  "labels": ["dependencies"],
+  "timezone": "Europe/Warsaw",
+  "schedule": ["after 9am on monday"],
+  "minimumReleaseAge": "7 days",
+  "prCreation": "not-pending",
+  "packageRules": [
+    {
+      "description": "Automerge non-major updates for GitHub Actions after stabilization",
+      "matchManagers": ["github-actions"],
+      "matchUpdateTypes": ["minor", "patch", "digest"],
+      "automerge": true,
+      "stabilityDays": 7
+    },
+    {
+      "description": "Group all Helm chart dependency updates",
+      "matchManagers": ["regex"],
+      "matchFileNames": ["charts/**"],
+      "groupName": "helm-chart-dependencies",
+      "stabilityDays": 7
+    }
+  ],
+  "customManagers": [
+    {
+      "customType": "regex",
+      "description": "Update appVersion in Chart.yaml (Docker image tag with 'v' prefix)",
+      "fileMatch": ["charts/.*/Chart\\.yaml$"],
+      "matchStrings": [
+        "#\\s*renovate:\\s*datasource=(?<datasource>.*?) depName=(?<depName>.*?)( versioning=(?<versioning>.*?))?\\nappVersion:\\s*[\"']?(?<currentValue>.*?)[\"']?\\s*$"
+      ],
+      "versioningTemplate": "{{#if versioning}}{{{versioning}}}{{else}}semver{{/if}}"
+    },
+    {
+      "customType": "regex",
+      "description": "Update image tag in values.yaml",
+      "fileMatch": ["charts/.*/values\\.yaml$"],
+      "matchStrings": [
+        "#\\s*renovate:\\s*datasource=(?<datasource>.*?) depName=(?<depName>.*?)( versioning=(?<versioning>.*?))?\\n\\s*tag:\\s*[\"']?(?<currentValue>.*?)[\"']?\\s*$"
+      ],
+      "versioningTemplate": "{{#if versioning}}{{{versioning}}}{{else}}semver{{/if}}"
+    },
+    {
+      "customType": "regex",
+      "description": "Update busybox image in deployment templates",
+      "fileMatch": ["charts/.*/templates/deployment\\.yaml$"],
+      "matchStrings": [
+        "image:\\s*(?<depName>busybox):(?<currentValue>\\d+\\.\\d+)"
+      ],
+      "datasourceTemplate": "docker"
+    }
+  ],
+  "postUpgradeTasks": {
+    "commands": [
+      "bash -c \"for chart in charts/*/Chart.yaml; do if git diff --name-only HEAD~1 | grep -q \\\"$(dirname $chart)\\\"; then version=$(grep '^version:' \\\"$chart\\\" | awk '{print $2}'); major=$(echo $version | cut -d. -f1); minor=$(echo $version | cut -d. -f2); patch=$(echo $version | cut -d. -f3); new_patch=$((patch + 1)); new_version=\\\"$major.$minor.$new_patch\\\"; sed -i \\\"s/^version: .*/version: $new_version/\\\" \\\"$chart\\\"; fi; done\""
+    ],
+    "executionMode": "branch",
+    "fileFilters": ["charts/**/Chart.yaml"]
+  }
+}
