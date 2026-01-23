@@ -2,10 +2,9 @@ apiVersion: v2
 name: prometheus-mikrotik-exporter
 description: Prometheus Exporter for Mikrotik RouterOS devices.
 type: application
-version: 0.5.4
+version: 0.5.5
 # renovate: datasource=docker depName=ghcr.io/akpw/mktxp
 appVersion: "v1.2.10"
-icon: https://raw.githubusercontent.com/akpw/mktxp/main/mktxp/cli/config/mktxp_black.png
 home: https://github.com/akpw/mktxp
 maintainers:
   - name: VRS-Factory

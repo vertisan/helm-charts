@@ -72,6 +72,7 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           args:
+            - mktxp
             - --cfg-dir
             - /mktxp_config
             - export
