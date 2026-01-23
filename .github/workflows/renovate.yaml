@@ -1,0 +1,35 @@
+name: Renovate
+
+on:
+  # Run on a schedule (every Monday at 9am UTC)
+  schedule:
+    - cron: '0 9 * * 1'
+  # Allow manual trigger
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Run in dry-run mode (no PRs created)'
+        required: false
+        default: 'false'
+        type: boolean
+
+# Limit concurrent runs to avoid conflicts
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  renovate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Self-hosted Renovate
+        uses: renovatebot/github-action@v41.0.5
+        with:
+          configurationFile: renovate.json
+          token: ${{ secrets.RENOVATE_TOKEN }}
+        env:
+          LOG_LEVEL: ${{ github.event.inputs.dry_run == 'true' && 'debug' || 'info' }}
+          RENOVATE_DRY_RUN: ${{ github.event.inputs.dry_run }}

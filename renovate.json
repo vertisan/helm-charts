@@ -3,22 +3,27 @@
   "extends": [
     "config:recommended",
     ":semanticCommits",
-    ":enablePreCommit",
     "helpers:pinGitHubActionDigests"
   ],
   "labels": ["dependencies"],
+  "timezone": "Europe/Warsaw",
+  "schedule": ["after 9am on monday"],
+  "minimumReleaseAge": "7 days",
+  "prCreation": "not-pending",
   "packageRules": [
     {
-      "description": "Automerge non-major updates for GitHub Actions",
+      "description": "Automerge non-major updates for GitHub Actions after stabilization",
       "matchManagers": ["github-actions"],
       "matchUpdateTypes": ["minor", "patch", "digest"],
-      "automerge": true
+      "automerge": true,
+      "stabilityDays": 7
     },
     {
       "description": "Group all Helm chart dependency updates",
       "matchManagers": ["regex"],
       "matchFileNames": ["charts/**"],
-      "groupName": "helm-chart-dependencies"
+      "groupName": "helm-chart-dependencies",
+      "stabilityDays": 7
     }
   ],
   "customManagers": [
