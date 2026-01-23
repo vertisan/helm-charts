@@ -4,7 +4,7 @@ image:
   repository: ghcr.io/akpw/mktxp
   pullPolicy: IfNotPresent
   # renovate: datasource=docker depName=ghcr.io/akpw/mktxp
-  tag: "1.2.10"
+  tag: "1.2.16"
 
 imagePullSecrets: []
 nameOverride: ""
