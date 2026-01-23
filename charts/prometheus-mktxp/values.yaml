@@ -26,11 +26,9 @@ serviceMonitor:
 podAnnotations: {}
 podLabels: {}
 
-podSecurityContext:
-  {}
+podSecurityContext: {}
 
-securityContext:
-  {}
+securityContext: {}
 
 service:
   type: ClusterIP
@@ -60,8 +58,8 @@ podDisruptionBudget: {}
 config:
   # mktxp.conf
   router:
-    existingSecret: ""
-    existingSecretKey: config
+    # existingSecret: ""
+    # existingSecretKey: config
     value: |
       ## Copyright (c) 2020 Arseniy Kuznetsov
       ##
@@ -142,8 +140,8 @@ config:
 
   # _mktxp.conf
   scrapper:
-    existingSecret: ""
-    existingSecretKey: config
+    # existingSecret: ""
+    # existingSecretKey: config
     value: |
       ## Copyright (c) 2020 Arseniy Kuznetsov
       ##
