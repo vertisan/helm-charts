@@ -26,20 +26,20 @@
         "digest"
       ],
       "automerge": true,
-      "stabilityDays": 7,
+      "minimumReleaseAge": "7 days",
       "commitMessagePrefix": "build(deps)",
       "groupName": "github-actions"
     },
     {
       "description": "Group all Helm chart dependency updates",
       "matchManagers": [
-        "regex"
+        "custom.regex"
       ],
       "matchFileNames": [
         "charts/**"
       ],
       "groupName": "helm-chart-dependencies",
-      "stabilityDays": 7,
+      "minimumReleaseAge": "7 days",
       "commitMessagePrefix": "build(deps)"
     }
   ],
@@ -47,8 +47,8 @@
     {
       "customType": "regex",
       "description": "Update appVersion in Chart.yaml (Docker image tag with 'v' prefix)",
-      "fileMatch": [
-        "charts/.*/Chart\\.yaml$"
+      "managerFilePatterns": [
+        "/charts/.*/Chart\\.yaml$/"
       ],
       "matchStrings": [
         "#\\s*renovate:\\s*datasource=(?<datasource>.*?) depName=(?<depName>.*?)( versioning=(?<versioning>.*?))?\\nappVersion:\\s*[\"']?(?<currentValue>.*?)[\"']?\\s*$"
@@ -58,8 +58,8 @@
     {
       "customType": "regex",
       "description": "Update image tag in values.yaml",
-      "fileMatch": [
-        "charts/.*/values\\.yaml$"
+      "managerFilePatterns": [
+        "/charts/.*/values\\.yaml$/"
       ],
       "matchStrings": [
         "#\\s*renovate:\\s*datasource=(?<datasource>.*?) depName=(?<depName>.*?)( versioning=(?<versioning>.*?))?\\n\\s*tag:\\s*[\"']?(?<currentValue>.*?)[\"']?\\s*$"
@@ -69,8 +69,8 @@
     {
       "customType": "regex",
       "description": "Update busybox image in deployment templates",
-      "fileMatch": [
-        "charts/.*/templates/deployment\\.yaml$"
+      "managerFilePatterns": [
+        "/charts/.*/templates/deployment\\.yaml$/"
       ],
       "matchStrings": [
         "image:\\s*(?<depName>busybox):(?<currentValue>\\d+\\.\\d+)"
