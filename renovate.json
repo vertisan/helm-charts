@@ -26,7 +26,9 @@
         "digest"
       ],
       "automerge": true,
-      "stabilityDays": 7
+      "stabilityDays": 7,
+      "commitMessagePrefix": "build(deps)",
+      "groupName": "github-actions"
     },
     {
       "description": "Group all Helm chart dependency updates",
@@ -37,7 +39,8 @@
         "charts/**"
       ],
       "groupName": "helm-chart-dependencies",
-      "stabilityDays": 7
+      "stabilityDays": 7,
+      "commitMessagePrefix": "build(deps)"
     }
   ],
   "customManagers": [
