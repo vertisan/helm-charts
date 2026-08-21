@@ -68,10 +68,13 @@ jobs:
           echo "charts=$charts" >> "$GITHUB_OUTPUT"
 
       - name: Run ah lint on all charts
+        env:
+          # renovate: docker=artifacthub/ah
+          AH_VERSION: v1.23.0@sha256:e5d2a2cdef85aac4928e8176ffaad24746c5fe961d64ff6856f7222957095356
         run: |
           for chart_dir in charts/*/; do
             if [ -f "$chart_dir/Chart.yaml" ]; then
               echo "Linting chart: $chart_dir"
-              docker run --rm -v "$(pwd)/$chart_dir:/chart" artifacthub/ah ah lint /chart
+              docker run --rm -v "$(pwd)/$chart_dir:/chart" "artifacthub/ah:$AH_VERSION" ah lint /chart
             fi
           done
