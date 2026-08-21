@@ -26,6 +26,8 @@
         "digest"
       ],
       "automerge": true,
+      "automergeType": "pr",
+      "automergeStrategy": "squash",
       "commitMessagePrefix": "build(deps)",
       "groupName": "github-actions"
     },
@@ -56,7 +58,8 @@
     {
       "customType": "regex",
       "managerFilePatterns": [
-        "/^charts/.+\\.ya?ml$/"
+        "/^charts/.+\\.ya?ml$/",
+        "/^\\.github/workflows/.+\\.ya?ml$/"
       ],
       "matchStrings": [
         "[\\t ]*(?:#|//) ?renovate: (?<datasource>git-refs)=(?<depName>\\S+)(?: branch=(?<currentValue>\\S+))?[\\t ]*\\r?\\n.+?[:=][\\t ]*[\"']?(?<currentDigest>[a-f0-9]+)[\"']?",
