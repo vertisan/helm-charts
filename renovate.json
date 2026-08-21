@@ -13,7 +13,7 @@
     "after 9am on monday"
   ],
   "minimumReleaseAge": "7 days",
-  "prCreation": "not-pending",
+  "prHourlyLimit": 20,
   "packageRules": [
     {
       "description": "Automerge non-major updates for GitHub Actions after stabilization",
@@ -26,9 +26,19 @@
         "digest"
       ],
       "automerge": true,
-      "minimumReleaseAge": "7 days",
       "commitMessagePrefix": "build(deps)",
       "groupName": "github-actions"
+    },
+    {
+      "description": "Keep the Helm CLI on 3.x until Helm 4 is validated with chart-testing",
+      "matchManagers": [
+        "github-actions"
+      ],
+      "matchDepNames": [
+        "helm",
+        "helm/helm"
+      ],
+      "allowedVersions": "<4"
     },
     {
       "description": "Group all Helm chart dependency updates",
@@ -39,7 +49,6 @@
         "charts/**"
       ],
       "groupName": "helm-chart-dependencies",
-      "minimumReleaseAge": "7 days",
       "commitMessagePrefix": "build(deps)"
     }
   ],
@@ -47,7 +56,7 @@
     {
       "customType": "regex",
       "managerFilePatterns": [
-        "/./"
+        "/^charts/.+\\.ya?ml$/"
       ],
       "matchStrings": [
         "[\\t ]*(?:#|//) ?renovate: (?<datasource>git-refs)=(?<depName>\\S+)(?: branch=(?<currentValue>\\S+))?[\\t ]*\\r?\\n.+?[:=][\\t ]*[\"']?(?<currentDigest>[a-f0-9]+)[\"']?",
