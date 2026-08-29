@@ -14,6 +14,41 @@ entries:
         fingerprint: BF013739E0FE6C13C90077C780A79E38DF9F4B33
         url: https://keybase.io/vrsfactory/pgp_keys.asc
     apiVersion: v2
+    appVersion: 1.2.20
+    created: "2026-08-29T09:32:30.313040129Z"
+    description: Prometheus Exporter for Mikrotik RouterOS devices.
+    digest: d215180e53be2200f7c82b2ab2974adae15dd880d6ea1c46504eec0be45d582d
+    home: https://github.com/akpw/mktxp
+    keywords:
+    - monitoring
+    - metric
+    - mikrotik
+    - prometheus
+    - exporter
+    maintainers:
+    - name: VRS-Factory
+      url: https://vrs-factory.dev
+    name: prometheus-mikrotik-exporter
+    sources:
+    - https://github.com/vertisan/helm-charts
+    - https://github.com/akpw/mktxp
+    type: application
+    urls:
+    - https://github.com/vertisan/helm-charts/releases/download/prometheus-mikrotik-exporter-0.6.1/prometheus-mikrotik-exporter-0.6.1.tgz
+    version: 0.6.1
+  - annotations:
+      artifacthub.io/category: monitoring-logging
+      artifacthub.io/links: |
+        - name: Chart Source
+          url: https://github.com/vertisan/helm-charts
+        - name: Upstream Project
+          url: https://github.com/akpw/mktxp
+        - name: Dedicated Grafana dashboard
+          url: https://grafana.com/grafana/dashboards/13679
+      artifacthub.io/signKey: |
+        fingerprint: BF013739E0FE6C13C90077C780A79E38DF9F4B33
+        url: https://keybase.io/vrsfactory/pgp_keys.asc
+    apiVersion: v2
     appVersion: 1.2.17
     created: "2026-06-05T19:14:47.179108889Z"
     description: Prometheus Exporter for Mikrotik RouterOS devices.
@@ -410,4 +445,4 @@ entries:
     urls:
     - https://github.com/vertisan/helm-charts/releases/download/prometheus-mikrotik-exporter-0.1.1/prometheus-mikrotik-exporter-0.1.1.tgz
     version: 0.1.1
-generated: "2026-06-05T19:14:47.179166096Z"
+generated: "2026-08-29T09:32:30.313127452Z"
