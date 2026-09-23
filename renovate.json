@@ -28,7 +28,7 @@
       "automerge": true,
       "automergeType": "pr",
       "automergeStrategy": "squash",
-      "commitMessagePrefix": "build(deps)",
+      "commitMessagePrefix": "build(deps):",
       "groupName": "github-actions"
     },
     {
@@ -51,7 +51,7 @@
         "charts/**"
       ],
       "groupName": "helm-chart-dependencies",
-      "commitMessagePrefix": "build(deps)"
+      "commitMessagePrefix": "build(deps):"
     }
   ],
   "customManagers": [
@@ -78,7 +78,7 @@
       "matchStrings": [
         "version:\\s(?<version>[^\\s]+)"
       ],
-      "bumpType": "{{#if isPatch}}patch{{else}}minor{{/if}}"
+      "bumpType": "{{#if isMajor}}major{{else if isPatch}}patch{{else}}minor{{/if}}"
     }
   ]
 }
