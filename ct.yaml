@@ -2,5 +2,9 @@ remote: origin
 target-branch: master
 chart-dirs:
   - charts
-check-version-increment: true
+# Chart versions are derived from conventional commits by
+# scripts/chart-version.sh, so a PR need not carry its own bump. The
+# equivalent check runs at PR time as the `version-plan` job in
+# .github/workflows/lint-test.yaml.
+check-version-increment: false
 validate-maintainers: false

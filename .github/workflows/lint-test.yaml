@@ -78,3 +78,28 @@ jobs:
               docker run --rm -v "$(pwd)/$chart_dir:/chart" "artifacthub/ah:$AH_VERSION" ah lint /chart
             fi
           done
+
+  version-plan:
+    # Replaces ct's check-version-increment: fails a PR that changes a chart
+    # when neither its title nor its commits map to a version bump. The
+    # bumper's own release PRs are exempt; their chore(release) title maps to
+    # no bump by design.
+    if: github.event_name == 'pull_request' && !startsWith(github.head_ref, 'chore/release-')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          fetch-depth: 0
+
+      - name: Plan chart versions
+        env:
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          BASE_REF: origin/${{ github.event.pull_request.base.ref }}
+        run: |
+          # Default `run` shell lacks pipefail; without it tee masks the exit code.
+          set -o pipefail
+          git fetch --tags --quiet
+          ./scripts/chart-version.sh plan | tee -a "$GITHUB_STEP_SUMMARY"

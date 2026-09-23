@@ -7,6 +7,10 @@ on:
     paths:
       - 'charts/**'
 
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
   lint-test:
     uses: ./.github/workflows/lint-test.yaml
@@ -62,3 +66,45 @@ jobs:
           CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
           CR_KEY: "${{ secrets.CR_KEY }}"
           CR_SIGN: true
+
+  version-bump-pr:
+    # Runs after `release` so a Renovate merge, which already carries its bump,
+    # publishes first; the script then sees the new tag and has nothing to do.
+    # master is protected, so the bump arrives as a PR rather than a push.
+    needs: release
+    permissions:
+      contents: write
+      pull-requests: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.repository.default_branch }}
+
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Open version bump PR
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BASE: ${{ github.event.repository.default_branch }}
+          BRANCH: chore/release-chart-versions
+          TITLE: "chore(release): bump chart versions"
+        run: |
+          set -o pipefail
+          git fetch --tags --quiet
+          ./scripts/chart-version.sh apply | tee -a "$GITHUB_STEP_SUMMARY"
+          if git diff --quiet -- charts; then
+            echo "No chart version bump needed."
+            exit 0
+          fi
+          git checkout -B "$BRANCH"
+          git commit -am "$TITLE"
+          git push --force origin "$BRANCH"
+          gh pr view "$BRANCH" >/dev/null 2>&1 || gh pr create \
+            --base "$BASE" --head "$BRANCH" --title "$TITLE" \
+            --body "Version bump derived from conventional commits since the last chart tag by scripts/chart-version.sh."
