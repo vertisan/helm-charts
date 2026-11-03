@@ -16,9 +16,17 @@
   "prHourlyLimit": 20,
   "packageRules": [
     {
-      "description": "Automerge non-major updates for GitHub Actions after stabilization",
-      "matchManagers": [
-        "github-actions"
+      "description": "Group CI dependencies (actions, Helm CLI, lint images) as ci(deps)",
+      "matchFileNames": [
+        ".github/workflows/**"
+      ],
+      "groupName": "github-actions",
+      "semanticCommitType": "ci"
+    },
+    {
+      "description": "Automerge non-major CI dependency updates after stabilization",
+      "matchFileNames": [
+        ".github/workflows/**"
       ],
       "matchUpdateTypes": [
         "minor",
@@ -27,9 +35,7 @@
       ],
       "automerge": true,
       "automergeType": "pr",
-      "automergeStrategy": "squash",
-      "commitMessagePrefix": "build(deps):",
-      "groupName": "github-actions"
+      "automergeStrategy": "squash"
     },
     {
       "description": "Keep the Helm CLI on 3.x until Helm 4 is validated with chart-testing",
@@ -51,7 +57,31 @@
         "charts/**"
       ],
       "groupName": "helm-chart-dependencies",
-      "commitMessagePrefix": "build(deps):"
+      "semanticCommitType": "fix"
+    },
+    {
+      "description": "Mark upstream major updates as breaking so the PR title matches the chart major bump",
+      "matchManagers": [
+        "custom.regex"
+      ],
+      "matchFileNames": [
+        "charts/**"
+      ],
+      "matchUpdateTypes": [
+        "major"
+      ],
+      "commitMessagePrefix": "feat(deps)!:",
+      "commitMessageAction": "update"
+    },
+    {
+      "description": "GHCR exposes no release timestamps; without this minimumReleaseAge holds its updates forever (they skip the age gate)",
+      "matchDatasources": [
+        "docker"
+      ],
+      "matchPackageNames": [
+        "ghcr.io/**"
+      ],
+      "minimumReleaseAgeBehaviour": "timestamp-optional"
     }
   ],
   "customManagers": [

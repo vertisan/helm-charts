@@ -17,6 +17,8 @@ PRs are squash-merged, so **the PR title is what gets parsed**, not the individu
 After a merge, `scripts/chart-version.sh` opens a `chore(release)` PR carrying the bump; merging it
 publishes the release. Renovate PRs bump their own chart version and publish on merge.
 
+Renovate titles chart dependency updates `fix(deps):` (`feat(deps)!:` for upstream majors) and CI-only updates `ci(deps):`, so their titles follow the table above.
+
 Run `./scripts/chart-version.sh plan` locally to preview the bump.
 
 Note: the `mktxp` v2 upgrade shipped as `0.7.0` under the previous rule. The next major upgrade
