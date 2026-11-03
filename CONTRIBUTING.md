@@ -21,5 +21,7 @@ Renovate titles chart dependency updates `fix(deps):` (`feat(deps)!:` for upstre
 
 Run `./scripts/chart-version.sh plan` locally to preview the bump.
 
+The GitHub release body is generated from the same commits: the chart description, then the commits since the previous chart tag that touch the chart, grouped by type (breaking, features, fixes, ...). Only types that bump a version are listed. Run `./scripts/chart-version.sh notes` to preview it; it writes the git-ignored `charts/<chart>/RELEASE-NOTES.md`.
+
 Note: the `mktxp` v2 upgrade shipped as `0.7.0` under the previous rule. The next major upgrade
 of an upstream dependency will go to `1.0.0`.

@@ -4,6 +4,9 @@
 #
 #   plan    print the computed bump for every chart; change nothing
 #   apply   rewrite `version:` in each chart's Chart.yaml
+#   notes   write RELEASE-NOTES.md into each chart dir for the pending release;
+#           chart-releaser uses it as the GitHub release body
+#           (CR_RELEASE_NOTES_FILE), so it must exist before packaging
 #
 # Environment (PR mode; both unset on master):
 #   PR_TITLE  the pull request title, parsed because squash merges discard
@@ -53,6 +56,88 @@ next() {
   esac
 }
 
+# Release-note sections, "key|title". Bullets follow semantic-release's
+# default (angular) preset: "* **scope:** subject (sha)", sorted by scope then
+# subject; a breaking commit is listed under its type and again, with its
+# BREAKING CHANGE note, under the breaking section. Sections are ordered as in
+# the conventionalcommits preset so breaking changes come first. Only types
+# that classify to a bump appear.
+SECTIONS=(
+  "breaking|⚠ BREAKING CHANGES"
+  "feat|Features"
+  "fix|Bug Fixes"
+  "perf|Performance Improvements"
+  "revert|Reverts"
+  "docs|Documentation"
+  "refactor|Code Refactoring"
+  "build|Build System"
+)
+
+# breaking_note <full commit message> -> BREAKING CHANGE footer text, unwrapped;
+# empty for a `type!:` commit without one
+breaking_note() {
+  awk '
+    found && /^[[:space:]]*$/ { exit }
+    found { note = note " " $0; next }
+    /^BREAKING[ -]CHANGE:/ { found = 1; sub(/^BREAKING[ -]CHANGE:[[:space:]]*/, ""); note = $0 }
+    END { print note }
+  ' <<<"$1"
+}
+
+# write_notes <chart dir> <chart name> <version> <newest chart tag or "">
+write_notes() {
+  local dir="$1" chart="$2" cur="$3" last="$4"
+  local out="$dir/RELEASE-NOTES.md" desc entries="" sha msg level subject
+  local type scope text note link s body repo="" compare=""
+
+  if [[ -n "${GITHUB_SERVER_URL:-}" && -n "${GITHUB_REPOSITORY:-}" ]]; then
+    repo="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY"
+  fi
+
+  desc="$(awk '/^description:/{sub(/^description:[[:space:]]*/, ""); print; exit}' "$dir/Chart.yaml")"
+
+  # entries: one "section<TAB>scope<TAB>text<TAB>link" line per bullet
+  while read -r sha; do
+    [[ -n "$sha" ]] || continue
+    msg="$(git log -1 --format=%B "$sha")"
+    level="$(classify "$msg")"
+    [[ "$level" != none ]] || continue
+    subject="${msg%%$'\n'*}"
+    [[ "$subject" =~ ^([a-zA-Z]+)(\(([^\)]*)\))?(!)?:[[:space:]]*(.*)$ ]]
+    type="$(tr '[:upper:]' '[:lower:]' <<<"${BASH_REMATCH[1]}")"
+    scope="${BASH_REMATCH[3]}"
+    text="${BASH_REMATCH[5]}"
+    link="$(git rev-parse --short=7 "$sha")"
+    [[ -z "$repo" ]] || link="[$link]($repo/commit/$sha)"
+
+    entries+="$type"$'\t'"$scope"$'\t'"$text"$'\t'"$link"$'\n'
+    if [[ "$level" == major ]]; then
+      note="$(breaking_note "$msg")"
+      entries+="breaking"$'\t'"$scope"$'\t'"${note:-$text}"$'\t'"$link"$'\n'
+    fi
+  done < <(git log --no-merges --format=%H "${last:+${last}..}HEAD" -- "$dir")
+
+  {
+    echo "$desc"
+    for s in "${SECTIONS[@]}"; do
+      body="$(awk -F'\t' -v k="${s%%|*}" '$1 == k' <<<"$entries" \
+        | LC_ALL=C sort -t $'\t' -k2,2 -k3,3 \
+        | awk -F'\t' '{ printf "* %s%s (%s)\n", ($2 != "" ? "**" $2 ":** " : ""), $3, $4 }')"
+      if [[ -n "$body" ]]; then
+        printf '\n### %s\n\n%s\n' "${s#*|}" "$body"
+      fi
+    done
+    if [[ -n "$last" && "$last" != "${chart}-${cur}" ]]; then
+      compare="$last...${chart}-${cur}"
+      [[ -z "$repo" ]] || compare="$repo/compare/$compare"
+      printf '\n**Full Changelog**: %s\n' "$compare"
+    fi
+  } >"$out"
+
+  echo "$chart: wrote $out"
+  cat "$out"
+}
+
 exit_code=0
 
 for dir in charts/*/; do
@@ -63,6 +148,13 @@ for dir in charts/*/; do
   cur="$(  awk '/^version:/{print $2; exit}' "$dir/Chart.yaml")"
 
   last="$(git tag --list "${chart}-*" --sort=-v:refname | head -1)"
+
+  # Before the guard: in notes mode the version being ahead of the newest tag
+  # is exactly the release being described.
+  if [[ "$MODE" == notes ]]; then
+    write_notes "$dir" "$chart" "$cur" "$last"
+    continue
+  fi
 
   # Already-bumped guard: Renovate (or a human) moved the version past the
   # newest release tag, so the bump is pending and nothing is owed here.
