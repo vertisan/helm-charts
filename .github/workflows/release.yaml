@@ -57,6 +57,11 @@ jobs:
           GPG_KEYRING_BASE64: "${{ secrets.GPG_KEYRING_BASE64 }}"
           GPG_PASSPHRASE: "${{ secrets.GPG_PASSPHRASE }}"
 
+      - name: Generate release notes
+        run: |
+          set -o pipefail
+          ./scripts/chart-version.sh notes | tee -a "$GITHUB_STEP_SUMMARY"
+
       - name: Run chart-releaser
         uses: helm/chart-releaser-action@cae68fefc6b5f367a0275617c9f83181ba54714f # v1.7.0
         with:
@@ -66,6 +71,8 @@ jobs:
           CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
           CR_KEY: "${{ secrets.CR_KEY }}"
           CR_SIGN: true
+          # Read from inside the chart package; falls back to the chart description.
+          CR_RELEASE_NOTES_FILE: RELEASE-NOTES.md
 
   version-bump-pr:
     # Runs after `release` so a Renovate merge, which already carries its bump,
