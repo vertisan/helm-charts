@@ -19,7 +19,7 @@ jobs:
           fetch-depth: 0
 
       - name: Set up Helm
-        uses: azure/setup-helm@9bc31f4ebc9c6b171d7bfbaa5d006ae7abdb4310 # v5.0.1
+        uses: azure/setup-helm@2f5e7bc67f1f9972ab16657bb795f36d8f04de0e # v5.1.0
         with:
           version: v3.22.1
 
@@ -48,7 +48,7 @@ jobs:
 
       - name: Create kind cluster
         if: steps.list-changed.outputs.changed == 'true'
-        uses: helm/kind-action@1544676c07bb3570fcb70166beaa07c4528fd4aa # v1.15.1
+        uses: helm/kind-action@ea822c7bf1874f08e5a491df991c228edffc3376 # v1.15.2
 
       - name: Run chart-testing (install)
         if: steps.list-changed.outputs.changed == 'true'
@@ -70,7 +70,7 @@ jobs:
       - name: Run ah lint on all charts
         env:
           # renovate: docker=artifacthub/ah
-          AH_VERSION: v1.23.0@sha256:e5d2a2cdef85aac4928e8176ffaad24746c5fe961d64ff6856f7222957095356
+          AH_VERSION: v1.24.0@sha256:97a90dba76f9cf550f0f93187222505ba104e3af72ab4a7bbe63b370aebaa6e7
         run: |
           for chart_dir in charts/*/; do
             if [ -f "$chart_dir/Chart.yaml" ]; then
